@@ -26,3 +26,132 @@ Built with:
 │   └── server.js
 ├── .gitignore
 ├── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+### 🔧 Prerequisites
+
+- Node.js (v18+ recommended for native `fetch` support)
+- npm or yarn
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/your-username/histo-map.git
+cd histo-map
+```
+
+### 2. Install dependencies
+
+```bash
+cd client
+npm install
+
+cd ../server
+npm install
+```
+
+### 3. Run the development servers
+
+In separate terminals:
+
+```bash
+# Frontend
+cd client
+npm start
+```
+
+```bash
+# Backend
+cd server
+node server.js
+```
+
+### 4. Open in browser
+
+Go to: [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🌐 API Overview
+
+### `GET /api/events?year=1066`
+
+Fetches historical battles (±10 years) from Wikidata using SPARQL and returns:
+
+```json
+[
+  {
+    "id": 0,
+    "title": "Battle of Hastings",
+    "description": "Battle on 1066-10-14",
+    "year": 1066,
+    "latitude": 50.9119,
+    "longitude": 0.4875,
+    "category": "battle"
+  },
+  ...
+]
+```
+
+---
+
+## 📦 Technologies Used
+
+### Frontend:
+- React
+- Leaflet (for interactive maps)
+- noUiSlider (optional for custom timeline slider)
+
+### Backend:
+- Node.js
+- Express
+- Axios (for SPARQL queries)
+
+### Data Source:
+- Wikidata (live SPARQL API)
+
+---
+
+## 🛡️ Environment & Ignore Setup
+
+Create a `.gitignore` in both root and `/server`:
+
+```gitignore
+# Common
+node_modules
+.env
+build
+dist
+.DS_Store
+```
+
+No `.env` is needed unless you add 3rd-party keys later.
+
+---
+
+## 📌 Roadmap / Ideas
+
+- [ ] Add philosophers, artworks, and treaties as event types
+- [ ] Load events dynamically when dragging the map or scrolling the timeline
+- [ ] Use PostgreSQL for caching data from Wikidata
+- [ ] Add offline mode with local dataset
+- [ ] Support multi-language content via Wikidata
+
+---
+
+## 🧠 Credits
+
+- [Wikidata Query Service](https://query.wikidata.org/)
+- [Leaflet.js](https://leafletjs.com/)
+- [React](https://react.dev/)
+- [OpenStreetMap tiles](https://www.openstreetmap.org/)
+
+---
+
+## 📜 License
+
+MIT — feel free to fork, modify, and build on it.
