@@ -1,0 +1,14 @@
+/* src/App.css */
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+.timeline {
+  margin: 20px 0;
+}
+
+.timeline label {
+  margin-right: 10px;
+  font-size: 16px;
+}

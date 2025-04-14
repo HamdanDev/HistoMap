@@ -1,0 +1,17 @@
+node_modules
+.env
+dist
+build
+
+histo-map-backend/node_modules
+histo-map-backend/.env  
+
+histo-map-backend/dist
+histo-map-backend/build
+histo-map-backend/histo-map-backend.zip
+histo-map-backend/histo-map-backend.tar.gz
+
+histo-map-frontend/node_modules
+histo-map-frontend/.env
+histo-map-frontend/dist
+histo-map-frontend/build
