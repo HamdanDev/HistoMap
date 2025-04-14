@@ -11,7 +11,7 @@ Built with:
 
 ## 📸 Preview
 
-![screenshot](docs/screenshot.jpg) <!-- Add an image here later if you have one -->
+![screenshot](docs/screenshot.png) <!-- Add an image here later if you have one -->
 
 ---
 
