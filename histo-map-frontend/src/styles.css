@@ -1,9 +1,5 @@
 /* styles.css or App.css */
-.rc-slider {
-    margin: 0 1rem;
-    height: 6px;
-  }
-  
+
   .rc-slider-rail {
     background-color: #ccc;
   }
