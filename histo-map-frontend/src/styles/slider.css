@@ -1,0 +1,29 @@
+.rc-slider {
+  height: 28px;
+}
+
+.rc-slider-rail {
+  background-color: var(--line);
+  height: 6px;
+}
+
+.rc-slider-track {
+  background: linear-gradient(90deg, var(--accent-strong), var(--accent));
+  height: 6px;
+}
+
+.rc-slider-handle {
+  background-color: var(--text);
+  border: 3px solid var(--accent);
+  box-shadow: 0 6px 18px var(--shadow);
+  height: 22px;
+  margin-top: -8px;
+  opacity: 1;
+  width: 22px;
+}
+
+.rc-slider-handle:focus-visible,
+.rc-slider-handle-dragging {
+  border-color: var(--accent-strong) !important;
+  box-shadow: 0 0 0 5px rgba(201, 162, 79, 0.22) !important;
+}

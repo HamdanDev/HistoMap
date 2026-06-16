@@ -1,0 +1,1 @@
+HistoMap upgrade patch. Copy files into your existing repo and adapt imports if needed.

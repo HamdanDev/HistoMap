@@ -1,86 +1,81 @@
-# 🌍 HistoMap — Interactive Historical Timeline Map
+# HistoMap
 
-HistoMap is a full-stack web app that displays historical events (e.g. battles, philosophers, inventions) on an interactive map of Europe. Users can browse through time using a slider to explore humanity's past, visually.
+HistoMap is a full-stack app that displays historical events on an interactive map of Europe. The frontend is built with React and Leaflet, and the backend proxies event data from Wikidata SPARQL.
 
-Built with:
-- 🖥️ React + Leaflet for the frontend
-- ⚙️ Node.js + Express backend
-- 🌐 Wikidata SPARQL as a live external data source (no local DB)
+## Project Structure
 
----
-
-## 📸 Preview
-
-![screenshot](docs/screenshot.png) <!-- Add an image here later if you have one -->
-
----
-
-## 📁 Project Structure
-
-```bash
+```text
 .
-├── client/         # React frontend
-│   └── src/
-│       └── App.js  # Map + year slider
-├── server/         # Node.js backend (Wikidata proxy)
-│   └── server.js
-├── .gitignore
-├── README.md
+├── histo-map-backend/
+│   ├── queries/      # SPARQL query builders
+│   ├── routes/       # Express route handlers
+│   ├── services/     # External API calls and data normalization
+│   ├── server.js
+│   └── .env.example
+├── histo-map-frontend/
+│   ├── src/
+│   │   ├── components/ # Reusable UI components
+│   │   ├── data/       # Static frontend data
+│   │   ├── hooks/      # React data/loading hooks
+│   │   ├── services/   # API and library setup helpers
+│   │   └── styles/     # App and component styles
+│   └── .env.example
+├── .env.example
+└── README.md
 ```
 
----
+## Environment
 
-## 🚀 Getting Started
-
-### 🔧 Prerequisites
-
-- Node.js (v18+ recommended for native `fetch` support)
-- npm or yarn
-
-### 1. Clone the repo
+Copy the example files before running locally:
 
 ```bash
-[git clone https://github.com/HamdanDev/HistoMap.git]
-cd histo-map
+cp .env.example .env
+cp histo-map-backend/.env.example histo-map-backend/.env
+cp histo-map-frontend/.env.example histo-map-frontend/.env
 ```
 
-### 2. Install dependencies
+Key variables:
 
 ```bash
-cd client
+PORT=5000
+CORS_ORIGIN=http://localhost:3000
+WIKIDATA_ENDPOINT=https://query.wikidata.org/sparql
+REACT_APP_API_BASE_URL=http://localhost:5000/api
+```
+
+## Getting Started
+
+Install dependencies:
+
+```bash
+cd histo-map-backend
 npm install
 
-cd ../server
+cd ../histo-map-frontend
 npm install
 ```
 
-### 3. Run the development servers
-
-In separate terminals:
+Run the backend:
 
 ```bash
-# Frontend
-cd client
+cd histo-map-backend
 npm start
 ```
 
+Run the frontend in a second terminal:
+
 ```bash
-# Backend
-cd server
-node server.js
+cd histo-map-frontend
+npm start
 ```
 
-### 4. Open in browser
+Open http://localhost:3000.
 
-Go to: [http://localhost:3000](http://localhost:3000)
-
----
-
-## 🌐 API Overview
+## API
 
 ### `GET /api/events?year=1066`
 
-Fetches historical battles (±10 years) from Wikidata using SPARQL and returns:
+Returns historical battle events within roughly 10 years of the requested year.
 
 ```json
 [
@@ -92,66 +87,30 @@ Fetches historical battles (±10 years) from Wikidata using SPARQL and returns:
     "latitude": 50.9119,
     "longitude": 0.4875,
     "category": "battle"
-  },
-  ...
+  }
 ]
 ```
 
----
+## Architecture Notes
 
-## 📦 Technologies Used
+- UI components do not call APIs directly.
+- `useEvents` owns event-loading state for the frontend.
+- `eventApi` owns frontend HTTP calls.
+- Backend routes stay thin and delegate data fetching to services.
+- Wikidata query text is isolated in `queries/`.
 
-### Frontend:
-- React
-- Leaflet (for interactive maps)
-- noUiSlider (optional for custom timeline slider)
+## Scripts
 
-### Backend:
-- Node.js
-- Express
-- Axios (for SPARQL queries)
+Backend:
 
-### Data Source:
-- Wikidata (live SPARQL API)
-
----
-
-## 🛡️ Environment & Ignore Setup
-
-Create a `.gitignore` in both root and `/server`:
-
-```gitignore
-# Common
-node_modules
-.env
-build
-dist
-.DS_Store
+```bash
+npm start
 ```
 
-No `.env` is needed unless you add 3rd-party keys later.
+Frontend:
 
----
-
-## 📌 Roadmap / Ideas
-
-- [ ] Add philosophers, artworks, and treaties as event types
-- [ ] Load events dynamically when dragging the map or scrolling the timeline
-- [ ] Use PostgreSQL for caching data from Wikidata
-- [ ] Add offline mode with local dataset
-- [ ] Support multi-language content via Wikidata
-
----
-
-## 🧠 Credits
-
-- [Wikidata Query Service](https://query.wikidata.org/)
-- [Leaflet.js](https://leafletjs.com/)
-- [React](https://react.dev/)
-- [OpenStreetMap tiles](https://www.openstreetmap.org/)
-
----
-
-## 📜 License
-
-MIT — feel free to fork, modify, and build on it.
+```bash
+npm start
+npm test
+npm run build
+```

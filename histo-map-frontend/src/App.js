@@ -1,82 +1,113 @@
-import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect, useMemo, useState } from "react";
 import "leaflet/dist/leaflet.css";
-import "./App.css";
-import TimelineSlider from "./TimelineSlider";
-import L from "leaflet";
+import "./styles/App.css";
+import "./styles/slider.css";
+import AppHeader from "./components/AppHeader";
+import EventDrawer from "./components/EventDrawer";
+import FilterPanel from "./components/FilterPanel";
+import MapView from "./components/MapView";
+import Timeline from "./components/Timeline";
+import { useEvents } from "./hooks/useEvents";
+import { configureLeafletIcons } from "./services/leafletIcons";
+import { searchEvents } from "./services/searchService";
+
+const MIN_YEAR = 500;
+const MAX_YEAR = 2025;
+const INITIAL_YEAR = 732;
+const THEMES = [
+  { id: "midnight", label: "Midnight Atlas" },
+  { id: "sepia", label: "Archive Sepia" },
+  { id: "war", label: "War Room" },
+  { id: "museum", label: "Museum Light" },
+];
 
 function App() {
-  const [events, setEvents] = useState([]);
-  const [year, setYear] = useState(732); // actual fetch trigger
-  const [tempYear, setTempYear] = useState(732); // visual display
+  const [theme, setTheme] = useState("midnight");
+  const [year, setYear] = useState(INITIAL_YEAR);
+  const [previewYear, setPreviewYear] = useState(INITIAL_YEAR);
+  const [category, setCategory] = useState("battle");
+  const [range, setRange] = useState(10);
+  const [language, setLanguage] = useState("en");
+  const [limit, setLimit] = useState(50);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchMode, setSearchMode] = useState("keyword");
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  // ✅ Fix default Leaflet marker icons ONCE inside component
+  const filters = useMemo(
+    () => ({ year, range, category, language, limit }),
+    [year, range, category, language, limit]
+  );
+  const { events, loading, error } = useEvents(filters);
+
+  const visibleEvents = useMemo(() => {
+    return searchEvents(events, { term: searchTerm, mode: searchMode });
+  }, [events, searchTerm, searchMode]);
+
   useEffect(() => {
-    delete L.Icon.Default.prototype._getIconUrl;
-
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-      iconUrl: require("leaflet/dist/images/marker-icon.png"),
-      shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
-    });
+    configureLeafletIcons();
   }, []);
 
-  const fetchEvents = async (year) => {
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/events?year=${year}`
-      );
-      const data = await response.json();
-      setEvents(data);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    }
-  };
-
   useEffect(() => {
-    fetchEvents(year);
-  }, [year]);
+    setSelectedEvent((currentEvent) => {
+      if (!currentEvent) {
+        return visibleEvents[0] || null;
+      }
+
+      return visibleEvents.some((event) => event.id === currentEvent.id)
+        ? currentEvent
+        : visibleEvents[0] || null;
+    });
+  }, [visibleEvents]);
 
   return (
-    <div className="App">
-      <h1 style={{ textAlign: "center", color:"#25180B"}}>Historical Map of Europe</h1>
-
-      <div className="slider-bar">
-      <h2 style={{ textAlign: "center" }}>🗺️ Year: {year}</h2>
-
-      <TimelineSlider
-        minYear={500}
-        maxYear={2025}
-        currentYear={tempYear}
-        onChange={(value) => setYear(value)} // real fetch only here
-        setTempYear={setTempYear}
+    <div className={`atlas-app theme-${theme}`}>
+      <AppHeader
+        searchTerm={searchTerm}
+        searchMode={searchMode}
+        onSearchChange={setSearchTerm}
+        onSearchModeChange={setSearchMode}
+        themes={THEMES}
+        theme={theme}
+        onThemeChange={setTheme}
       />
-      </div>
-      <div className="map-container">
-      <MapContainer
-        center={[50, 10]}
-        zoom={5}
-        style={{ height: "600px", width: "100%" }}
-      >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+
+      <div className="atlas-layout">
+        <FilterPanel
+          category={category}
+          range={range}
+          language={language}
+          limit={limit}
+          eventCount={visibleEvents.length}
+          onCategoryChange={setCategory}
+          onRangeChange={setRange}
+          onLanguageChange={setLanguage}
+          onLimitChange={setLimit}
         />
 
-        {events.map((event) => (
-          <Marker key={event.id} position={[event.latitude, event.longitude]}>
-            <Popup>
-              <h3>{event.title}</h3>
-              <p>{event.description}</p>
-              <em>Year: {event.year}</em>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-    </div>
-    <div className="bottom-row">
-    📍 {events.length} events loaded for year {year}. Use the slider to explore more.
-  </div>
+        <MapView
+          events={visibleEvents}
+          loading={loading}
+          error={error}
+          selectedEvent={selectedEvent}
+          onSelectEvent={setSelectedEvent}
+          theme={theme}
+        />
+
+        <EventDrawer
+          event={selectedEvent}
+          events={visibleEvents}
+          onSelectEvent={setSelectedEvent}
+        />
+      </div>
+
+      <Timeline
+        year={year}
+        previewYear={previewYear}
+        minYear={MIN_YEAR}
+        maxYear={MAX_YEAR}
+        onYearChange={setYear}
+        onPreviewYearChange={setPreviewYear}
+      />
     </div>
   );
 }
